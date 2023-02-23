@@ -31,6 +31,8 @@ async function connect() {
           }
         });
         const data = response.data;
+        console.log('JSON data downloaded from API');
+        console.log(data.room);
 
         // Check if the color hex value has changed since last check
         const currentColorHex = data.room.color_hex;
