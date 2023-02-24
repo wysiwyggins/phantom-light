@@ -27,7 +27,7 @@ async function connect() {
         // Retrieve data from the API
         const response = await axios.get(API_URL, {
           headers: {
-            Authorization: `Bearer ${authToken}`
+            Authorization: `${authToken}`
           }
         });
         const data = response.data;
