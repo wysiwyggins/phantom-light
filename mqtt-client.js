@@ -31,7 +31,7 @@ async function connect() {
           }
         });
         const data = response.data;
-        console.log(data);
+        //console.log(data);
 
         // Check if the color hex value has changed since last check
         const currentColorHex = data.room && data.room.color_hex;
