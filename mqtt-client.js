@@ -31,14 +31,13 @@ async function connect() {
           }
         });
         const data = response.data;
-        console.log('JSON data downloaded from API');
-        console.log(data.room);
+        console.log(data);
 
         // Check if the color hex value has changed since last check
-        const currentColorHex = data.room.color_hex;
-        if (currentColorHex !== lastColorHex) {
+        const currentColorHex = data.room && data.room.color_hex;
+        if (currentColorHex && currentColorHex !== lastColorHex) {
           // Publish data to the MQTT broker
-          await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
+          await client.publish(MQTT_TOPIC, JSON.stringify(currentColorHex));
           console.log('Published data to MQTT broker:', currentColorHex);
 
           // Update the last color hex value
