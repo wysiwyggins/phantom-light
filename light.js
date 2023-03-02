@@ -6,6 +6,7 @@ const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 
+
 const client = mqtt.connect('mqtt://localhost');
 client.on('connect', function () {
   client.subscribe('dmx/set', function (err) {
