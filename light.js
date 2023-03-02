@@ -21,7 +21,8 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
-    const hexColor = message;
+    const data = JSON.parse(message);
+    const hexColor = data.color.slice(1);
     console.log('Received message:', hexColor);
 
     // Convert hex color to RGB
@@ -29,10 +30,6 @@ client.on('message', function (topic, message) {
     const green = parseInt(hexColor.slice(2, 4), 16);
     const blue = parseInt(hexColor.slice(4, 6), 16);
 
-    if (isNaN(red) || isNaN(green) || isNaN(blue)) {
-      console.log('Invalid RGB values received:', {red, green, blue});
-      return;
-    }
     // Set DMX values for RGB fill light
     universe.update({1: red, 2: green, 3: blue}, function (err) {
       if (err) {
