@@ -1,13 +1,12 @@
 //light.js would set a dmx rgb fill light based on the current room color of the mqtt-client middleware's 
 //token-connected character at mudroom.rip
 //the topic will be called dmx/setconst mqtt = require('mqtt');
-
 const mqtt = require('mqtt');
 const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 
-const client  = mqtt.connect('mqtt://localhost');
+const client = mqtt.connect('mqtt://localhost');
 client.on('connect', function () {
   client.subscribe('dmx/set', function (err) {
     if (err) {
@@ -15,9 +14,8 @@ client.on('connect', function () {
     } else {
       console.log('Subscribed to MQTT topic: dmx/set');
     }
-  })
-})
-
+  });
+});
 
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
