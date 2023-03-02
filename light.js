@@ -6,7 +6,6 @@ const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 
-
 const client = mqtt.connect('mqtt://localhost');
 client.on('connect', function () {
   client.subscribe('dmx/set', function (err) {
@@ -20,10 +19,13 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
-    const data = JSON.parse(message);
-    const hexColor = typeof data.color === 'string' ? data.color.slice(1) : null;
+    let hexColor = message.toString();
+    if (Buffer.isBuffer(message)) {
+      hexColor = message.toString('hex');
+    }
+    hexColor = hexColor.slice(1);
 
-    if (!hexColor) {
+    if (!/^#[0-9A-Fa-f]{6}$/.test('#' + hexColor)) {
       console.log('Error: Invalid color value in message:', message);
       return;
     }
