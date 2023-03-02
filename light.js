@@ -8,42 +8,27 @@ const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1
 
 const client = mqtt.connect('mqtt://localhost');
 client.on('connect', function () {
-  client.subscribe('dmx/set', function (err) {
-    if (err) {
-      console.log('Error subscribing to MQTT topic:', err);
-    } else {
-      console.log('Subscribed to MQTT topic: dmx/set');
-    }
-  });
+  client.subscribe('dmx/set');
 });
 
 client.on('message', function (topic, message) {
-  if (topic === 'dmx/set') {
-    let hexColor = message.toString();
-    if (Buffer.isBuffer(message)) {
-      hexColor = message.toString('hex');
-    }
+  const hexColor = message.toString();
+  if (hexColor[0] === '#') {
     hexColor = hexColor.slice(1);
-
-    if (!/^#[0-9A-Fa-f]{6}$/.test('#' + hexColor)) {
-      console.log('Error: Invalid color value in message:', message);
-      return;
-    }
-
-    console.log('Received message:', hexColor);
-
-    // Convert hex color to RGB
-    const red = parseInt(hexColor.slice(0, 2), 16);
-    const green = parseInt(hexColor.slice(2, 4), 16);
-    const blue = parseInt(hexColor.slice(4, 6), 16);
-
-    // Set DMX values for RGB fill light
-    universe.update({1: red, 2: green, 3: blue}, function (err) {
-      if (err) {
-        console.log('Error setting DMX values:', err);
-      } else {
-        console.log('DMX values updated:', {red, green, blue});
-      }
-    });
   }
+  if (!/^[0-9A-F]{6}$/i.test(hexColor)) {
+    console.error(`Invalid color value in message: ${message}`);
+    return;
+  }
+
+  const red = parseInt(hexColor.slice(0, 2), 16);
+  const green = parseInt(hexColor.slice(2, 4), 16);
+  const blue = parseInt(hexColor.slice(4, 6), 16);
+
+  if (isNaN(red) || isNaN(green) || isNaN(blue)) {
+    console.error(`Invalid color value in message: ${message}`);
+    return;
+  }
+
+  universe.update({ 1: red, 2: green, 3: blue });
 });
