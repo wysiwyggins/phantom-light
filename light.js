@@ -25,9 +25,9 @@ client.on('message', function (topic, message) {
     console.log('Received message:', hexColor);
 
     // Convert hex color to RGB
-    const red = parseInt(hexColor.slice(0, 1), 16);
-    const green = parseInt(hexColor.slice(1, 3), 16);
-    const blue = parseInt(hexColor.slice(3, 5), 16);
+    const red = parseInt(hexColor.slice(1, 2), 16);
+    const green = parseInt(hexColor.slice(2, 4), 16);
+    const blue = parseInt(hexColor.slice(4, 6), 16);
     console.log('Converted to:', red.toString(), green.toString(), blue.toString());
     // Set DMX values for RGB fill light
     universe.update({1: red, 2: green, 3: blue}, function (err) {
