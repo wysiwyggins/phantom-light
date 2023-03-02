@@ -11,26 +11,19 @@ const client = mqtt.connect('mqtt://localhost');
 client.on('connect', function () {
   client.subscribe('dmx/set');
 });
-
-client.on('message', function (topic, message) {
-  const hexColor = message.trim().replace(/^#/, ''); // remove whitespace and '#' symbol
-  if (!/^[0-9A-F]{6}$/i.test(hexColor)) { // match 6 hexadecimal characters
+client.on('message', (topic, message) => {
+  const hexColor = message.toString().replace('#', '');
+  if (!/^[0-9A-Fa-f]{6}$/g.test(hexColor)) {
     console.error(`Invalid color value in message: ${message}`);
     return;
-  }
-
-  if (hexColor[0] === '#') {
-    hexColor = hexColor.slice(1);
   }
 
   const red = parseInt(hexColor.slice(0, 2), 16);
   const green = parseInt(hexColor.slice(2, 4), 16);
   const blue = parseInt(hexColor.slice(4, 6), 16);
 
-  if (isNaN(red) || isNaN(green) || isNaN(blue)) {
-    console.error(`Invalid color value in message: ${message}`);
-    return;
-  }
+  console.log(`Received message: ${message}`);
+  console.log(`Setting DMX value to: ${red}, ${green}, ${blue}`);
 
-  universe.update({ 1: red, 2: green, 3: blue });
+  universe.update(1, [red, green, blue]);
 });
