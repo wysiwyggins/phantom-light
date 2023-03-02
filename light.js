@@ -14,7 +14,8 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
   const hexColor = message.toString();
-  if (typeof hexColor !== 'string' || !/^#?[0-9A-F]{6}$/i.test(hexColor)) {
+  console.log(`Received message: ${message}`);
+  if (typeof hexColor !== 'string' || !/^[0-9A-F]{6}$/i.test(hexColor)) {
     console.error(`Invalid color value in message: ${message}`);
     return;
   }
