@@ -9,7 +9,7 @@ const client = mqtt.connect('mqtt://localhost');
 
 // Initialize DMX universe and device
 const dmx = new DMX();
-const universe = dmx.addUniverse('myUniverse', 'enttec-open-usb-dmx', '/dev/ttyUSB0');
+const universe = dmx.addUniverse('myUniverse', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 
 // Subscribe to Mosquitto topic
 client.on('connect', () => {
