@@ -18,9 +18,10 @@ client.on('connect', function () {
   })
 })
 
+
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
-    const hexColor = message.toString();
+    const hexColor = message.toString().replace(/#/g, '');
     console.log('Received message:', hexColor);
 
     // Convert hex color to RGB
@@ -28,7 +29,6 @@ client.on('message', function (topic, message) {
     const green = parseInt(hexColor.slice(2, 4), 16);
     const blue = parseInt(hexColor.slice(4, 6), 16);
 
-    console.log("converted to:", red.toString(),green.toString(),blue.toString())
     // Set DMX values for RGB fill light
     universe.update({1: red, 2: green, 3: blue}, function (err) {
       if (err) {
@@ -38,4 +38,6 @@ client.on('message', function (topic, message) {
       }
     });
   }
-})
+});
+
+
