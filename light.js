@@ -16,7 +16,7 @@ client.on('message', function (topic, message) {
   if (hexColor[0] === '#') {
     hexColor = hexColor.slice(1);
   }
-  if (!/^[0-9A-F]{6}$/i.test(hexColor)) {
+  if (typeof hexColor !== 'string' || !/^[0-9A-F]{6}$/i.test(hexColor)) {
     console.error(`Invalid color value in message: ${message}`);
     return;
   }
