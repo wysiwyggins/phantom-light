@@ -20,7 +20,13 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
     const data = JSON.parse(message);
-    const hexColor = data.color.slice(1);
+    const hexColor = typeof data.color === 'string' ? data.color.slice(1) : null;
+
+    if (!hexColor) {
+      console.log('Error: Invalid color value in message:', message);
+      return;
+    }
+
     console.log('Received message:', hexColor);
 
     // Convert hex color to RGB
