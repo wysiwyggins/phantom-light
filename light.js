@@ -20,7 +20,7 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
   if (topic === 'dmx/set') {
-    const hexColor = message.toString();
+    const hexColor = message.toString().replace('#', '');
     console.log('Received message:', hexColor);
 
     // Convert hex color to RGB
