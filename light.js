@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const DMX = require('dmx');
 const dmx = new DMX();
-const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
+const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB0');
 const client = mqtt.connect('mqtt://localhost');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
