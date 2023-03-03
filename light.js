@@ -3,41 +3,34 @@ const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 const client = mqtt.connect('mqtt://localhost');
-const SerialPort = require('serialport');
-const Readline = require('@serialport/parser-readline');
-const parser = new Readline();
 
-client.on('connect', () => {
+client.on('connect', function () {
   console.log('Connected to MQTT broker');
   client.subscribe('dmx/set');
 });
 
-client.on('message', (topic, message) => {
-  console.log('Received message:', message.toString());
-  let hexColor = message.toString().replace('#', '');
-  console.log('Hex color:', hexColor);
-  let rgbColor = hexToRgb(hexColor);
-  console.log('RGB color:', rgbColor);
+client.on('message', function (topic, message) {
+  console.log('Received message: ' + message);
 
-  if (isNaN(rgbColor.red) || isNaN(rgbColor.green) || isNaN(rgbColor.blue)) {
-    console.error('Invalid color value in message:', message.toString());
+  // Remove any extra quotation marks from the message
+  message = message.toString().replace(/"/g, '');
+
+  // Convert the hex color to RGB
+  const hexColor = message.slice(1);
+  if (hexColor.length !== 6 || isNaN(parseInt(hexColor, 16))) {
+    console.log('Invalid color value in message: "' + message + '"');
     return;
   }
+  const red = parseInt(hexColor.slice(0, 2), 16);
+  const green = parseInt(hexColor.slice(2, 4), 16);
+  const blue = parseInt(hexColor.slice(4, 6), 16);
 
-  console.log('Setting DMX values:', rgbColor.red, rgbColor.green, rgbColor.blue);
-  universe.update({ 1: rgbColor.red, 2: rgbColor.green, 3: rgbColor.blue });
+  // Set the DMX value for the RGB light
+  universe.update({ 1: red, 2: green, 3: blue }, function (error) {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('DMX value set to: ' + red + ',' + green + ',' + blue);
+    }
+  });
 });
-
-function hexToRgb(hex) {
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  return { red: r, green: g, blue: b };
-}
-
-parser.on('data', (data) => {
-  console.log('Received DMX data:', data);
-});
-
-const port = new SerialPort('/dev/ttyUSB1', { baudRate: 115200 });
-port.pipe(parser);
