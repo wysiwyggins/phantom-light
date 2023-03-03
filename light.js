@@ -6,23 +6,27 @@ const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 
+
 const client = mqtt.connect('mqtt://localhost');
-client.on('connect', function () {
+client.on('connect', () => {
+  console.log('Connected to MQTT broker');
   client.subscribe('dmx/set');
 });
 
-client.on('message', function (topic, message) {
+client.on('message', (topic, message) => {
   console.log('Received message:', message.toString());
-  let color = message.toString().substring(1); // Remove the # character
-  let red = parseInt(color.substring(0, 2), 16);
-  let green = parseInt(color.substring(2, 4), 16);
-  let blue = parseInt(color.substring(4, 6), 16);
 
-  if (isNaN(red) || isNaN(green) || isNaN(blue)) {
-    console.error('Invalid color value in message:', message.toString());
+  const hex = message.toString().replace(/^#/, '');
+  if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
+    console.error(`Invalid color value in message: "${message.toString()}"`);
     return;
   }
 
-  console.log('RGB values:', red, green, blue);
-  universe.update({ 1: red, 2: green, 3: blue });
+  const red = parseInt(hex.slice(0, 2), 16);
+  const green = parseInt(hex.slice(2, 4), 16);
+  const blue = parseInt(hex.slice(4, 6), 16);
+  
+  console.log(`RGB values: red=${red}, green=${green}, blue=${blue}`);
+
+  universe.update(1, { r: red, g: green, b: blue });
 });
