@@ -1,12 +1,13 @@
-const dmx = require('dmx');
+const mqtt = require('mqtt');
+const DMX = require('dmx');
+const dmx = new DMX();
+const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
+const client = mqtt.connect('mqtt://localhost');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 const mqtt = require('mqtt');
-
-const universe = dmx.addUniverse('myUniverse', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
 const parser = new Readline();
 
-const client = mqtt.connect('mqtt://localhost');
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
   client.subscribe('dmx/set');
