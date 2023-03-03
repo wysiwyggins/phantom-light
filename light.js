@@ -1,7 +1,7 @@
 //light.js would set a dmx rgb fill light based on the current room color of the mqtt-client middleware's 
 //token-connected character at mudroom.rip
-//the topic will be called dmx/setconst mqtt = require('mqtt');
-
+//the topic will be called dmx/set
+const mqtt = require('mqtt');
 const DMX = require('dmx');
 const dmx = new DMX();
 const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
