@@ -27,8 +27,11 @@ client.on('message', function (topic, message) {
   console.log('Converted to:', red.toString(), green.toString(), blue.toString());
   // Set the DMX value for the RGB light
   universe.update({ 1: red, 2: green, 3: blue }, function (error) {
+    console.log('trying to update the light!');
     if (error) {
+      console.log('oh no...');
       console.error(error);
+
     } else {
       console.log('DMX value set to: ' + red + ',' + green + ',' + blue);
     }
