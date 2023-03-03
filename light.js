@@ -13,6 +13,7 @@ client.on('connect', function () {
 });
 client.on('message', (topic, message) => {
   const hexColor = message.toString().trim();
+  console.log('Received message:', hexColor);
   if (!/^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/g.test(hexColor)) {
     console.error(`Invalid color value in message: ${hexColor}`);
     return;
