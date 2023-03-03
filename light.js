@@ -1,11 +1,8 @@
-//light.js would set a dmx rgb fill light based on the current room color of the mqtt-client middleware's 
-//token-connected character at mudroom.rip
-//the topic will be called dmx/set
 const mqtt = require('mqtt');
 const DMX = require('dmx');
-const client = mqtt.connect('mqtt://localhost');
 const dmx = new DMX();
-const universe = dmx.addUniverse('default', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
+const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
+const client = mqtt.connect('mqtt://localhost');
 
 client.on('connect', function () {
   console.log('Connected to MQTT broker');
@@ -13,17 +10,27 @@ client.on('connect', function () {
 });
 
 client.on('message', function (topic, message) {
-  console.log('Received message: ' + message.toString());
-  const hexColor = message.toString().substring(1); // remove the "#" character
-  const red = parseInt(hexColor.substring(0, 2), 16);
-  const green = parseInt(hexColor.substring(2, 4), 16);
-  const blue = parseInt(hexColor.substring(4, 6), 16);
+  console.log('Received message: ' + message);
 
-  if (isNaN(red) || isNaN(green) || isNaN(blue)) {
-    console.error(`Invalid color value in message: "${message.toString()}"`);
+  // Remove any extra quotation marks from the message
+  message = message.toString().replace(/"/g, '');
+
+  // Convert the hex color to RGB
+  const hexColor = message.slice(1);
+  if (hexColor.length !== 6 || isNaN(parseInt(hexColor, 16))) {
+    console.log('Invalid color value in message: "' + message + '"');
     return;
   }
+  const red = parseInt(hexColor.slice(0, 2), 16);
+  const green = parseInt(hexColor.slice(2, 4), 16);
+  const blue = parseInt(hexColor.slice(4, 6), 16);
 
-  console.log(`Converted RGB values: red=${red}, green=${green}, blue=${blue}`);
-  universe.updateAll([red, green, blue]);
+  // Set the DMX value for the RGB light
+  universe.update({ 1: red, 2: green, 3: blue }, function (error) {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('DMX value set to: ' + red + ',' + green + ',' + blue);
+    }
+  });
 });
