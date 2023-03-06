@@ -52,36 +52,39 @@ async function connect() {
   } catch (error) {
     console.error(error);
   }
+
+
+  client.on('connect', async () => {
+    console.log('Connected to Mosquitto broker');
+    await client.subscribe('kneels/get');
+    console.log('Subscribed to "kneels/get" topic');
+  });
+  
+  client.on('message', async (topic, message) => {
+    const data = message.toString();
+    console.log(`Received message "${data}" on topic "${topic}"`);
+    try {
+      await axios.post('https://www.mudroom.rip/api/v1/game/rooms/kneel/', { message: data }, {
+        headers: {
+          Authorization: `${authToken}`
+        }
+      });
+      console.log('Posted to API endpoint');
+    } catch (error) {
+      console.error('Error posting to API endpoint:', error);
+    }
+  });
+  
+  client.on('error', (error) => {
+    console.error('Error connecting to Mosquitto broker:', error);
+  });
+  
+  process.on('SIGINT', async () => {
+    console.log('Closing Mosquitto client');
+    await client.end();
+    process.exit();
+  });
 }
 
 connect();
-client.on('connect', async () => {
-  console.log('Connected to Mosquitto broker');
-  await client.subscribe('kneels/get');
-  console.log('Subscribed to "kneels/get" topic');
-});
 
-client.on('message', async (topic, message) => {
-  const data = message.toString();
-  console.log(`Received message "${data}" on topic "${topic}"`);
-  try {
-    await axios.post('https://www.mudroom.rip/api/v1/game/rooms/kneel/', { message: data }, {
-      headers: {
-        Authorization: `${authToken}`
-      }
-    });
-    console.log('Posted to API endpoint');
-  } catch (error) {
-    console.error('Error posting to API endpoint:', error);
-  }
-});
-
-client.on('error', (error) => {
-  console.error('Error connecting to Mosquitto broker:', error);
-});
-
-process.on('SIGINT', async () => {
-  console.log('Closing Mosquitto client');
-  await client.end();
-  process.exit();
-});
