@@ -26,6 +26,6 @@ client.on('message', function (topic, message) {
   const blue = parseInt(hexColor.slice(4, 6), 16);
   console.log('Converted to:', red.toString(), green.toString(), blue.toString());
   // Set the DMX value for the RGB light
-  //universe.update({ 1: red, 2: green, 3: blue });
-  universe.update({ 4: 255 });
+  universe.update({ 10: red, 11: green, 12: blue });
+  //universe.update({ 8: 255 });
 });
