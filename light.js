@@ -21,12 +21,12 @@ client.on('message', function (topic, message) {
     console.log('Invalid color value in message: "' + message + '"');
     return;
   }
-  const red = parseInt(hexColor.slice(0, 2), 16);
-  const green = parseInt(hexColor.slice(2, 4), 16);
-  const blue = parseInt(hexColor.slice(4, 6), 16);
+  let red = parseInt(hexColor.slice(0, 2), 16);
+  let green = parseInt(hexColor.slice(2, 4), 16);
+  let blue = parseInt(hexColor.slice(4, 6), 16);
   console.log('Converted to:', red.toString(), green.toString(), blue.toString());
   // Set the DMX value for the RGB light
   universe.update({ 2: red, 3: green, 4: blue });
   //universe.update({ 8: 255 });
-  universe.update({1: 255, 2: 128, 3: 128, 4: 0, 5: 0,6:0,7:0,8:0});
+  universe.update({1: 255, 2: red, 3: green, 4: blue, 5: 0,6:0,7:0,8:0});
 });
