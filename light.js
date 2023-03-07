@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const DMX = require('dmx');
 const dmx = new DMX();
-const universe = dmx.addUniverse('demo', 'enttec-dmx-usb-pro', '/dev/ttyUSB1');
+const universe = dmx.addUniverse('demo', 'enttec-usb-dmx-pro', '/dev/ttyUSB1');
 const client = mqtt.connect('mqtt://localhost');
 
 client.on('connect', function () {
