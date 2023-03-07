@@ -28,5 +28,5 @@ client.on('message', function (topic, message) {
   // Set the DMX value for the RGB light
   universe.update({ 2: red, 3: green, 4: blue });
   //universe.update({ 8: 255 });
-  universe.update({1: 255, 2: 0, 3: 0, 4: 255, 5: 0,6:0,7:0,8:0});
+  universe.update({1: 255, 2: 0, 3: 255, 4: 255, 5: 0,6:0,7:0,8:0});
 });
