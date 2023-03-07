@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const DMX = require('dmx');
 const dmx = new DMX();
-const universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', '/dev/ttyUSB1');
+const universe = dmx.addUniverse('demo', 'enttec-dmx-usb-pro', '/dev/ttyUSB1');
 const client = mqtt.connect('mqtt://localhost');
 
 client.on('connect', function () {
@@ -26,14 +26,5 @@ client.on('message', function (topic, message) {
   const blue = parseInt(hexColor.slice(4, 6), 16);
   console.log('Converted to:', red.toString(), green.toString(), blue.toString());
   // Set the DMX value for the RGB light
-  universe.update({ 1: red, 2: green, 3: blue }, function (error) {
-    console.log('trying to update the light!'); //this never fires?
-    if (error) {
-      console.log('oh no...'); // neither does this?
-      console.error(error);
-
-    } else {
-      console.log('DMX value set to: ' + red + ',' + green + ',' + blue); //nope
-    }
-  });
+  universe.update({ 1: red, 2: green, 3: blue });
 });
