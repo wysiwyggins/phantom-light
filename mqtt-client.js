@@ -6,7 +6,7 @@ const MQTT_BROKER_URL = 'mqtt://localhost';
 const LIGHT_TOPIC = 'dmx/set';
 const DOORS_TOPIC = 'doors/set';
 const KNEELS_TOPIC = 'kneels/get'; //the kneeling pad
-const API_URL = 'https://www.mudroom.rip/api/v1/game/tableau/';
+const API_URL = 'https://grotto.wileywiggins.com/api/v1/game/tableau/';
 const POLL_INTERVAL = 2000; // 2 seconds
 
 const secrets = JSON.parse(fs.readFileSync('secrets.json'));
@@ -64,7 +64,7 @@ async function connect() {
     const data = message.toString();
     console.log(`Received message "${data}" on topic "${topic}"`);
     try {
-      await axios.post('https://www.mudroom.rip/api/v1/game/rooms/kneel/', { message: data }, {
+      await axios.post('https://grotto.wileywiggins.com/api/v1/game/rooms/kneel/', { message: data }, {
         headers: {
           Authorization: `${authToken}`
         }
