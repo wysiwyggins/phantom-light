@@ -13,6 +13,9 @@ const secrets = JSON.parse(fs.readFileSync('secrets.json'));
 const authToken = secrets.authToken;
 
 let lastColorHex = null;
+let data;
+
+let lastExits = []
 
 async function connect() {
   try {
@@ -25,18 +28,19 @@ async function connect() {
 
     // Start polling the API
     setInterval(async () => {
+      let response;
       try {
         // Retrieve data from the API
-        const response = await axios.get(API_URL, {
+        response = await axios.get(API_URL, {
           headers: {
             Authorization: `${authToken}`
           }
         });
-        const data = response.data;
+        data = response.data;
         //console.log(data);
 
         // Check if the color hex value has changed since last check
-        const currentColorHex = data.room && data.room.color_hex;
+        let currentColorHex = data.room && data.room.color_hex;
         if (currentColorHex && currentColorHex !== lastColorHex) {
           // Publish data to the MQTT broker
           await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
@@ -45,6 +49,27 @@ async function connect() {
           // Update the last color hex value
           lastColorHex = currentColorHex;
         }
+
+        if (currentColorHex && currentColorHex !== lastColorHex) {
+          // Publish data to the MQTT broker
+          await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
+          console.log('Published data to MQTT broker:', currentColorHex);
+
+          // Update the last color hex value
+          lastColorHex = currentColorHex;
+        }
+
+        let currentExits = data.room.exits;
+        if (currentExits && currentExits !== lastExits) {
+          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits));
+          console.log('Published data to MQTT broker:', currentExits);
+
+          // Update the last color hex value
+          lastExits = currentExits;
+        }
+
+
+        
       } catch (error) {
         console.error(error);
       }
@@ -58,10 +83,12 @@ async function connect() {
     console.log('Connected to Mosquitto broker');
     await client.subscribe('kneels/get');
     console.log('Subscribed to "kneels/get" topic');
+    await client.subscribe('doorknob/get');
+    console.log('Subscribed to "doorknob/get" topic');
   });
   
   client.on('message', async (topic, message) => {
-    const data = message.toString();
+    let data = message.toString();
     console.log(`Received message "${data}" on topic "${topic}"`);
     try {
       await axios.post('https://grotto.wileywiggins.com/api/v1/game/rooms/kneel/', { message: data }, {
