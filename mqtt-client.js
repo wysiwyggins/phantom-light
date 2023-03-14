@@ -15,7 +15,7 @@ const authToken = secrets.authToken;
 let lastColorHex = null;
 let data;
 
-let lastExits = [];
+let lastExits = null;
 
 async function connect() {
   try {
@@ -39,6 +39,8 @@ async function connect() {
         data = response.data;
         //console.log(data);
 
+        //populate the exits
+        let currentExits = data.room.exits;
         // Check if the color hex value has changed since last check
         let currentColorHex = data.room && data.room.color_hex;
         if (currentColorHex && currentColorHex !== lastColorHex) {
@@ -54,16 +56,19 @@ async function connect() {
           // Publish data to the MQTT broker
           await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
           console.log('Published data to MQTT broker:', currentColorHex);
+
           // Update the last color hex value
           lastColorHex = currentColorHex;
 
-          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits)); //i think mqtt makes you stringify, so I hope this doesn't wreck the receiver
-          console.log('Published exits to MQTT broker');
-          // Update the last exits array
-          lastExits = currentExits;
+          if (currentColorHex && currentColorHex !== lastColorHex) {
+            await client.publish(DOORS_TOPIC, JSON.stringify(currentExits)); //i think mqtt makes you stringify, so I hope this doesn't wreck the receiver
+            console.log('Published exits to MQTT broker');
+  
+            // Update the last exits array
+            lastExits = currentExits;
+          }
+  
         }
-
-
         
       } catch (error) {
         console.error(error);
