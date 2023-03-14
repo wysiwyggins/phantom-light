@@ -62,7 +62,7 @@ async function connect() {
         let currentExits = data.room.exits;
         if (currentExits && currentExits !== lastExits) {
           await client.publish(DOORS_TOPIC, JSON.stringify(currentExits));
-          console.log('Published data to MQTT broker:', currentExits);
+          console.log('Published exits to MQTT broker');
 
           // Update the last color hex value
           lastExits = currentExits;
