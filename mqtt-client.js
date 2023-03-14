@@ -15,7 +15,7 @@ const authToken = secrets.authToken;
 let lastColorHex = null;
 let data;
 
-let lastExits = []
+let lastExits = [];
 
 async function connect() {
   try {
@@ -60,8 +60,8 @@ async function connect() {
         }
 
         let currentExits = data.room.exits;
-        if (currentExits && currentExits !== lastExits) {
-          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits));
+        if (currentColorHex && currentColorHex !== lastColorHex) {
+          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits)); //i think mqtt makes you stringify, so I hope this doesn't wreck the receiver
           console.log('Published exits to MQTT broker');
 
           // Update the last color hex value
