@@ -50,23 +50,12 @@ async function connect() {
 
           // Update the last color hex value
           lastColorHex = currentColorHex;
-        }
-
-        if (currentColorHex && currentColorHex !== lastColorHex) {
-          // Publish data to the MQTT broker
-          await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
-          console.log('Published data to MQTT broker:', currentColorHex);
-
-          // Update the last color hex value
-          lastColorHex = currentColorHex;
-
+          
           await client.publish(DOORS_TOPIC, JSON.stringify(currentExits)); //i think mqtt makes you stringify, so I hope this doesn't wreck the receiver
           console.log('Published exits to MQTT broker');
 
           // Update the last exits array
           lastExits = currentExits;
-        
-  
         }
         
       } catch (error) {
