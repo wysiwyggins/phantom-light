@@ -5,7 +5,8 @@ const fs = require('fs');
 const MQTT_BROKER_URL = 'mqtt://localhost';
 const LIGHT_TOPIC = 'dmx/set';
 const DOORS_TOPIC = 'doors/set';
-const KNEELS_TOPIC = 'kneels/get'; //the kneeling pad
+const KNEELS_TOPIC = 'kneels/get';
+const DEATH_TOPIC = 'death/set'; // Added death topic
 const API_URL = 'https://grotto.wileywiggins.com/api/v1/game/tableau/';
 const POLL_INTERVAL = 2000; // 2 seconds
 
@@ -19,45 +20,39 @@ let lastExits = null;
 
 async function connect() {
   try {
-    // Connect to the MQTT broker
     const client = await mqtt.connectAsync(MQTT_BROKER_URL);
     console.log('Connected to MQTT broker');
 
-    // Load the auth token from the secrets file
-    
-
-    // Start polling the API
     setInterval(async () => {
       let response;
       try {
-        // Retrieve data from the API
         response = await axios.get(API_URL, {
           headers: {
             Authorization: `${authToken}`
           }
         });
         data = response.data;
-        //console.log(data);
 
-        //populate the exits
         let currentExits = data.room.exits;
-        // Check if the color hex value has changed since last check
         let currentColorHex = data.room && data.room.color_hex;
         if (currentColorHex && currentColorHex !== lastColorHex) {
-          // Publish data to the MQTT broker
           await client.publish(LIGHT_TOPIC, JSON.stringify(currentColorHex));
           console.log('Published data to MQTT broker:', currentColorHex);
 
-          // Update the last color hex value
           lastColorHex = currentColorHex;
-          
-          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits)); //i think mqtt makes you stringify, so I hope this doesn't wreck the receiver
+
+          await client.publish(DOORS_TOPIC, JSON.stringify(currentExits));
           console.log('Published exits to MQTT broker');
 
-          // Update the last exits array
           lastExits = currentExits;
         }
-        
+
+        // Check if character is dead and publish death note to death/set topic
+        if (data.character && data.character.dead) {
+          await client.publish(DEATH_TOPIC, JSON.stringify(data.character['death note']));
+          console.log('Published death note to MQTT broker:', data.character['death note']);
+        }
+
       } catch (error) {
         console.error(error);
       }
@@ -66,7 +61,6 @@ async function connect() {
     console.error(error);
   }
 
-
   client.on('connect', async () => {
     console.log('Connected to Mosquitto broker');
     await client.subscribe('kneels/get');
@@ -74,7 +68,7 @@ async function connect() {
     await client.subscribe('doorknob/get');
     console.log('Subscribed to "doorknob/get" topic');
   });
-  
+
   client.on('message', async (topic, message) => {
     let data = message.toString();
     console.log(`Received message "${data}" on topic "${topic}"`);
@@ -89,11 +83,11 @@ async function connect() {
       console.error('Error posting to API endpoint:', error);
     }
   });
-  
+
   client.on('error', (error) => {
     console.error('Error connecting to Mosquitto broker:', error);
   });
-  
+
   process.on('SIGINT', async () => {
     console.log('Closing Mosquitto client');
     await client.end();
@@ -102,4 +96,3 @@ async function connect() {
 }
 
 connect();
-
