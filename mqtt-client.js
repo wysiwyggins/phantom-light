@@ -72,15 +72,17 @@ async function connect() {
   client.on('message', async (topic, message) => {
     let data = message.toString();
     console.log(`Received message "${data}" on topic "${topic}"`);
-    try {
-      await axios.post('https://grotto.wileywiggins.com/api/v1/game/rooms/kneel/', { message: data }, {
-        headers: {
-          Authorization: `${authToken}`
-        }
-      });
-      console.log('Posted to API endpoint');
-    } catch (error) {
-      console.error('Error posting to API endpoint:', error);
+    if (topic === KNEELS_TOPIC) {
+      try {
+        await axios.post(KNEEL_API_URL, { message: data }, {
+          headers: {
+            Authorization: `${authToken}`
+          }
+        });
+        console.log('Posted to Kneel API endpoint');
+      } catch (error) {
+        console.error('Error posting to Kneel API endpoint:', error);
+      }
     }
   });
 
