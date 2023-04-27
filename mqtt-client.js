@@ -5,7 +5,7 @@ const fs = require('fs');
 const MQTT_BROKER_URL = 'mqtt://localhost';
 const LIGHT_TOPIC = 'dmx/set';
 const DOORS_TOPIC = 'doors/set';
-const KNEELS_TOPIC = 'kneels/get';
+const KNEELS_TOPIC = 'kneels/set';
 const DEATH_TOPIC = 'death/set'; // Added death topic
 const API_URL = 'https://grotto.wileywiggins.com/api/v1/game/tableau/';
 const POLL_INTERVAL = 2000; // 2 seconds
@@ -63,8 +63,8 @@ async function connect() {
 
   client.on('connect', async () => {
     console.log('Connected to Mosquitto broker');
-    await client.subscribe('kneels/get');
-    console.log('Subscribed to "kneels/get" topic');
+    await client.subscribe('kneels/set');
+    console.log('Subscribed to "kneels/set" topic');
     await client.subscribe('doorknob/get');
     console.log('Subscribed to "doorknob/get" topic');
   });

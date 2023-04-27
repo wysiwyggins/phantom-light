@@ -1,3 +1,6 @@
+I live at pi@mosquittopi.local
+password is pb3...
+
 Here's an example of what the mudroom api json looks like-
 
 ```
