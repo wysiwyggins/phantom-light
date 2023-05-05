@@ -1,6 +1,15 @@
 I live at pi@mosquittopi.local
 password is pb3...
 
+
+
+the doorknob is wwiggins@doorknobpi.local
+password is pb3...
+
+doorknob code is in the doorknob directory
+
+
+
 Here's an example of what the mudroom api json looks like-
 
 ```

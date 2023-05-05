@@ -7,7 +7,7 @@ const LIGHT_TOPIC = 'dmx/set';
 const DOORS_TOPIC = 'doors/set';
 const KNEELS_TOPIC = 'kneels/set';
 const DEATH_TOPIC = 'death/set'; // Added death topic
-const API_URL = 'https://grotto.wileywiggins.com/api/v1/game/tableau/';
+const API_URL = 'https://www.mudroom.rip/api/v1/game/tableau/';
 const POLL_INTERVAL = 2000; // 2 seconds
 
 const secrets = JSON.parse(fs.readFileSync('secrets.json'));
