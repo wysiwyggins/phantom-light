@@ -31,9 +31,7 @@ client.on('message', function (topic, message) {
     universe.update({1: 255, 2: red, 3: green, 4: blue});
   } else if (topic === 'kneels/set') {
     // Dim the lights by half
-    while (message = 1) {
-      dimLightsByHalf();
-    } 
+    dimLightsByHalf();
   }
 });
 
